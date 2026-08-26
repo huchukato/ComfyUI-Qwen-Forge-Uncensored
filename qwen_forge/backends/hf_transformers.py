@@ -199,13 +199,13 @@ class HFTransformersBackend(AbstractBackend):
             model_inputs = {k: v.to(self._device) for k, v in inputs.items() if torch.is_tensor(v)}
         else:
             # Multimodal: build processor inputs from conversation
-            # Collect images in the same order they appear in the conversation content
+            # Images are already PIL Images (converted in base.py), extract them
+            # in the same order they appear in the conversation content
             images = [
-                tensor_to_pil(item.get("image"))
+                item.get("image")
                 for item in conversation[-1].get("content", [])
-                if item.get("type") == "image"
+                if item.get("type") == "image" and item.get("image") is not None
             ]
-            images = [img for img in images if img is not None]
             prompt_text = ""
             for item in conversation[-1].get("content", []):
                 if item.get("type") == "text":
@@ -228,11 +228,15 @@ class HFTransformersBackend(AbstractBackend):
             model_device = next(self.model.parameters()).device
             model_inputs = {k: v.to(model_device, non_blocking=True) if torch.is_tensor(v) else v for k, v in inputs.items()}
 
+        stop_tokens = [self.tokenizer.eos_token_id]
+        if hasattr(self.tokenizer, "eot_id") and self.tokenizer.eot_id is not None:
+            stop_tokens.append(self.tokenizer.eot_id)
+
         gen_kwargs: dict[str, Any] = {
             "max_new_tokens": max_new_tokens,
             "repetition_penalty": repetition_penalty,
             "num_beams": num_beams,
-            "eos_token_id": self.tokenizer.eos_token_id,
+            "eos_token_id": stop_tokens,
             "pad_token_id": self.tokenizer.pad_token_id,
         }
 

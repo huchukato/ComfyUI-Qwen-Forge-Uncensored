@@ -52,12 +52,15 @@ class QwenUncensoredBaseNode:
             frame_count = media.get("frame_count", 1)
 
             if image is not None:
-                content.append({"type": "image", "image": image})
+                pil_img = tensor_to_pil(image)
+                if pil_img is not None:
+                    content.append({"type": "image", "image": pil_img})
 
             if image2 is not None:
                 frames = extract_frames(image2, frame_count=frame_count)
                 for frame in frames:
-                    content.append({"type": "image", "image": frame})
+                    if frame is not None:
+                        content.append({"type": "image", "image": frame})
 
         content.append({"type": "text", "text": prompt_text})
         conversation.append({"role": "user", "content": content})
