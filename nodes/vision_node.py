@@ -102,7 +102,7 @@ class QwenUncensoredVision(QwenUncensoredBaseNode):
             "max_tokens": self._model_default(kwargs["model_name"], "max_tokens", 8192),
             "temperature": 0.6,
             "top_p": 0.9,
-            "repetition_penalty": 1.0,
+            "repetition_penalty": 1.2,
             "num_beams": 1,
             "seed": kwargs["seed"],
             "use_torch_compile": False,

@@ -39,7 +39,6 @@ _PLANNING_RE = re.compile(
     r"final\s+check\b|"
     r"i\s+(should|need|must|will|want|am\s+going\s+to|have\s+to)\b|"
     r"let's\b|"
-    r"first\b|next\b|then\b|"
     r"wait\b|"
     r"ready\s+to\s+write\b|"
     r"writing\s+the\s+prompt\b|"
