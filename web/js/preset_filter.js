@@ -6,6 +6,7 @@ const VISION_NODES = new Set([
     "QwenUncensoredVisionGGUF",
     "QwenUncensoredVisionGGUFAdvanced",
 ]);
+const filterStates = new WeakMap();
 
 function familyForPreset(preset) {
     if (preset.includes("MiniMax H3")) return "MiniMax H3";
@@ -15,11 +16,19 @@ function familyForPreset(preset) {
 }
 
 function configurePresetFilter(node) {
+    if (!VISION_NODES.has(node.comfyClass)) return;
+
     const familyWidget = node.widgets?.find((widget) => widget.name === "preset_family");
     const presetWidget = node.widgets?.find((widget) => widget.name === "preset_prompt");
     if (!familyWidget || !presetWidget) return;
 
-    const allPresets = [...presetWidget.options.values];
+    const existing = filterStates.get(node);
+    if (existing?.familyWidget === familyWidget && existing?.presetWidget === presetWidget) {
+        existing.applyFilter();
+        return;
+    }
+
+    const allPresets = existing?.allPresets ?? [...presetWidget.options.values];
     const applyFilter = () => {
         const filtered = allPresets.filter((preset) => familyForPreset(preset) === familyWidget.value);
         presetWidget.options.values = filtered;
@@ -33,18 +42,34 @@ function configurePresetFilter(node) {
         applyFilter();
     };
 
-    const originalConfigure = node.onConfigure;
-    node.onConfigure = function (info) {
-        originalConfigure?.call(this, info);
-        applyFilter();
-    };
-
+    filterStates.set(node, { familyWidget, presetWidget, allPresets, applyFilter });
     applyFilter();
+}
+
+function walkGraph(graph) {
+    for (const node of graph?.nodes ?? []) {
+        configurePresetFilter(node);
+        if (node.subgraph) walkGraph(node.subgraph);
+    }
+}
+
+function refreshAllGraphs() {
+    requestAnimationFrame(() => walkGraph(app.graph));
 }
 
 app.registerExtension({
     name: "QwenUncensored.presetFilter",
     nodeCreated(node) {
-        if (VISION_NODES.has(node.comfyClass)) configurePresetFilter(node);
+        configurePresetFilter(node);
+    },
+    loadedGraphNode(node) {
+        configurePresetFilter(node);
+    },
+    afterConfigureGraph() {
+        walkGraph(app.graph);
+    },
+    setup() {
+        app.canvas?.canvas?.addEventListener("subgraph-opened", refreshAllGraphs);
+        app.canvas?.canvas?.addEventListener("subgraph-converted", refreshAllGraphs);
     },
 });
