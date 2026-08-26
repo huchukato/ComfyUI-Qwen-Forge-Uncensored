@@ -23,7 +23,7 @@ if current_dir not in sys.path:
 
 
 def _load_module(file_path: str) -> None:
-    module_name = os.path.basename(file_path)[:-3]
+    module_name = f"{__name__}.nodes.{os.path.basename(file_path)[:-3]}"
     spec = importlib.util.spec_from_file_location(module_name, file_path)
     if spec is None or spec.loader is None:
         return

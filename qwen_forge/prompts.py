@@ -21,11 +21,27 @@ def load_prompt_config(path: str | Path) -> dict[str, Any]:
         print(f"[QwenUncensored] Failed to load system prompts: {exc}")
         return {"_presets": [], "text": {"translation_prompt": "", "styles": {}}}
 
+    presets = data.get("_presets", [])
     return {
-        "_presets": data.get("_presets", []),
+        "_presets": presets,
+        "_preset_groups": group_presets(presets),
         "presets": data.get("presets", {}),
         "text": data.get("text", {"translation_prompt": "", "styles": {}}),
     }
+
+
+def group_presets(presets: list[str]) -> dict[str, list[str]]:
+    groups = {"MiniMax H3": [], "Wan 2.2": [], "LTX": [], "Generic": []}
+    for preset in presets:
+        if "MiniMax H3" in preset:
+            groups["MiniMax H3"].append(preset)
+        elif "Wan 2.2" in preset:
+            groups["Wan 2.2"].append(preset)
+        elif "LTX" in preset:
+            groups["LTX"].append(preset)
+        else:
+            groups["Generic"].append(preset)
+    return {name: values for name, values in groups.items() if values}
 
 
 def build_prompt(

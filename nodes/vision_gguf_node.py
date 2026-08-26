@@ -23,35 +23,39 @@ class QwenUncensoredVisionGGUF(QwenUncensoredBaseNode):
         from qwen_forge.prompts import load_prompt_config
         cfg = load_prompt_config(SYSTEM_PROMPTS_PATH)
         presets = cfg.get("_presets", [])
-        default_preset = presets[0] if presets else "Describe this image in detail."
+        preset_groups = cfg.get("_preset_groups", {})
+        families = list(preset_groups) or ["Generic"]
+        default_preset = preset_groups.get(families[0], presets)[0] if presets else "Describe this image in detail."
 
         return {
             "required": {
                 "model_name": (models, {"default": default_model}),
+                "preset_family": (families, {"default": families[0]}),
                 "preset_prompt": (presets, {"default": default_preset}),
                 "custom_prompt": ("STRING", {"default": "", "multiline": True}),
-                "max_tokens": ("INT", {"default": 8192, "min": 64, "max": 16384}),
                 "keep_model_loaded": ("BOOLEAN", {"default": True}),
                 "seed": ("INT", {"default": 1, "min": 1, "max": 2**32 - 1}),
                 "keep_last_prompt": ("BOOLEAN", {"default": False}),
+                "image2_to_video": ("BOOLEAN", {"default": False}),
             },
             "optional": {
                 "image": ("IMAGE",),
-                "image2": ("IMAGE",),
+                "image2_video": ("IMAGE",),
             },
         }
 
     def process(
         self,
         model_name,
+        preset_family,
         preset_prompt,
         custom_prompt,
-        max_tokens,
         keep_model_loaded,
         seed,
         keep_last_prompt,
+        image2_to_video,
         image=None,
-        image2=None,
+        image2_video=None,
     ):
         if keep_last_prompt:
             last = get_last_prompt()
@@ -71,7 +75,7 @@ class QwenUncensoredVisionGGUF(QwenUncensoredBaseNode):
 
         params = {
             "device": "auto",
-            "max_tokens": max_tokens,
+            "max_tokens": self._model_default(model_name, "max_tokens", 8192),
             "temperature": 0.6,
             "top_p": 0.9,
             "repetition_penalty": 1.0,
@@ -83,7 +87,7 @@ class QwenUncensoredVisionGGUF(QwenUncensoredBaseNode):
             "pool_size": 4194304,
         }
 
-        media = {"image": image, "image2": image2, "frame_count": 1}
+        media = {"image": image, "image2": image2_video, "frame_count": 16 if image2_to_video else 1}
         result = self._run_inference(
             model_name=model_name,
             prompt_text=system_prompt,
@@ -113,11 +117,14 @@ class QwenUncensoredVisionGGUFAdvanced(QwenUncensoredBaseNode):
         from qwen_forge.prompts import load_prompt_config
         cfg = load_prompt_config(SYSTEM_PROMPTS_PATH)
         presets = cfg.get("_presets", [])
-        default_preset = presets[0] if presets else "Describe this image in detail."
+        preset_groups = cfg.get("_preset_groups", {})
+        families = list(preset_groups) or ["Generic"]
+        default_preset = preset_groups.get(families[0], presets)[0] if presets else "Describe this image in detail."
 
         return {
             "required": {
                 "model_name": (models, {"default": default_model}),
+                "preset_family": (families, {"default": families[0]}),
                 "preset_prompt": (presets, {"default": default_preset}),
                 "custom_prompt": ("STRING", {"default": "", "multiline": True}),
                 "max_tokens": ("INT", {"default": 8192, "min": 64, "max": 16384}),
@@ -144,6 +151,7 @@ class QwenUncensoredVisionGGUFAdvanced(QwenUncensoredBaseNode):
     def process(
         self,
         model_name,
+        preset_family,
         preset_prompt,
         custom_prompt,
         max_tokens,
@@ -205,3 +213,13 @@ class QwenUncensoredVisionGGUFAdvanced(QwenUncensoredBaseNode):
         set_last_prompt(result)
         self._maybe_unload(keep_model_loaded)
         return (result,)
+
+
+NODE_CLASS_MAPPINGS = {
+    "QwenUncensoredVisionGGUF": QwenUncensoredVisionGGUF,
+    "QwenUncensoredVisionGGUFAdvanced": QwenUncensoredVisionGGUFAdvanced,
+}
+NODE_DISPLAY_NAME_MAPPINGS = {
+    "QwenUncensoredVisionGGUF": "Qwen-Uncensored Vision (GGUF)",
+    "QwenUncensoredVisionGGUFAdvanced": "Qwen-Uncensored Vision GGUF (Advanced)",
+}

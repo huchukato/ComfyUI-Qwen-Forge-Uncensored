@@ -79,6 +79,12 @@ class QwenUncensoredBaseNode:
         cleaned = clean_model_output(raw, OutputCleanConfig(mode="prompt")) or raw
         return cleaned
 
+    @staticmethod
+    def _model_default(model_name: str, key: str, fallback: Any) -> Any:
+        entry = resolve_model_entry(model_name, load_model_catalog())
+        defaults = entry.get("defaults") if isinstance(entry.get("defaults"), dict) else {}
+        return entry.get(key, defaults.get(key, fallback))
+
     def _maybe_unload(self, keep_model_loaded: bool) -> None:
         if not keep_model_loaded:
             self._unload()

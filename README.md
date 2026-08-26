@@ -6,7 +6,7 @@ A clean, modular ComfyUI node pack for uncensored Qwen multimodal and text gener
 
 - **Pluggable backends**: HuggingFace Transformers and GGUF (llama.cpp) out of the box; vLLM and MLX stubs ready for future support.
 - **Multimodal and text-only nodes** for video/animation prompt generation.
-- **System prompt presets** for MiniMax H3, Wan 2.2, LTX and image/video analysis.
+- **Grouped system prompt presets** for MiniMax H3, Wan 2.2, LTX and generic image/video analysis.
 - **Smart prompt cache**, VRAM cleanup, and `keep_model_loaded` support.
 - **Qwen3.x family detection** with automatic thinking disabled.
 
@@ -36,6 +36,8 @@ For GGUF vision support, install a vision-capable `llama-cpp-python` wheel for y
 | `Qwen-Uncensored Vision GGUF (Advanced)` | GGUF | Multimodal GGUF with full parameters |
 | `Qwen-Uncensored Text` | HF Transformers | Prompt enhancement / text-only |
 | `Qwen-Uncensored Text (GGUF)` | GGUF | Prompt enhancement / text-only via llama.cpp |
+| `Qwen Uncensored - VRAM Cleanup` | Utility | Pass-through VRAM cache cleanup and model unloading |
+| `Qwen Uncensored - Story Split` | Utility | Split a story into four separate prompts |
 
 ## Configuration
 

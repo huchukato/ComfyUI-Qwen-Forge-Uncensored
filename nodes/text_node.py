@@ -98,3 +98,7 @@ class QwenUncensoredText(QwenUncensoredBaseNode):
         set_last_prompt(result)
         self._maybe_unload(keep_model_loaded)
         return (result,)
+
+
+NODE_CLASS_MAPPINGS = {"QwenUncensoredText": QwenUncensoredText}
+NODE_DISPLAY_NAME_MAPPINGS = {"QwenUncensoredText": "Qwen-Uncensored Text"}

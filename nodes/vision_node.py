@@ -25,23 +25,26 @@ class QwenUncensoredVision(QwenUncensoredBaseNode):
         from qwen_forge.prompts import load_prompt_config
         cfg = load_prompt_config(SYSTEM_PROMPTS_PATH)
         presets = cfg.get("_presets", [])
-        default_preset = presets[0] if presets else "Describe this image in detail."
+        preset_groups = cfg.get("_preset_groups", {})
+        families = list(preset_groups) or ["Generic"]
+        default_preset = preset_groups.get(families[0], presets)[0] if presets else "Describe this image in detail."
 
         return {
             "required": {
                 "model_name": (models, {"default": default_model}),
                 "quantization": (["None (FP16)", "8-bit (Balanced)", "4-bit (VRAM-friendly)"], {"default": "None (FP16)"}),
                 "attention_mode": (["auto", "sage", "flash_attention_2", "sdpa"], {"default": "auto"}),
+                "preset_family": (families, {"default": families[0]}),
                 "preset_prompt": (presets, {"default": default_preset}),
                 "custom_prompt": ("STRING", {"default": "", "multiline": True}),
-                "max_tokens": ("INT", {"default": 8192, "min": 64, "max": 16384}),
                 "keep_model_loaded": ("BOOLEAN", {"default": True}),
                 "seed": ("INT", {"default": 1, "min": 1, "max": 2**32 - 1}),
                 "keep_last_prompt": ("BOOLEAN", {"default": False}),
+                "image2_to_video": ("BOOLEAN", {"default": False}),
             },
             "optional": {
                 "image": ("IMAGE",),
-                "image2": ("IMAGE",),
+                "image2_video": ("IMAGE",),
             },
         }
 
@@ -50,14 +53,15 @@ class QwenUncensoredVision(QwenUncensoredBaseNode):
         model_name,
         quantization,
         attention_mode,
+        preset_family,
         preset_prompt,
         custom_prompt,
-        max_tokens,
         keep_model_loaded,
         seed,
         keep_last_prompt,
+        image2_to_video,
         image=None,
-        image2=None,
+        image2_video=None,
     ):
         return self._process_common(
             model_name=model_name,
@@ -65,12 +69,12 @@ class QwenUncensoredVision(QwenUncensoredBaseNode):
             attention_mode=attention_mode,
             preset_prompt=preset_prompt,
             custom_prompt=custom_prompt,
-            max_tokens=max_tokens,
             keep_model_loaded=keep_model_loaded,
             seed=seed,
             keep_last_prompt=keep_last_prompt,
+            image2_to_video=image2_to_video,
             image=image,
-            image2=image2,
+            image2=image2_video,
         )
 
     def _process_common(self, **kwargs):
@@ -95,7 +99,7 @@ class QwenUncensoredVision(QwenUncensoredBaseNode):
             "quantization": kwargs["quantization"],
             "attention_mode": kwargs["attention_mode"],
             "device": "auto",
-            "max_tokens": kwargs["max_tokens"],
+            "max_tokens": self._model_default(kwargs["model_name"], "max_tokens", 8192),
             "temperature": 0.6,
             "top_p": 0.9,
             "repetition_penalty": 1.0,
@@ -104,7 +108,11 @@ class QwenUncensoredVision(QwenUncensoredBaseNode):
             "use_torch_compile": False,
         }
 
-        media = {"image": kwargs.get("image"), "image2": kwargs.get("image2"), "frame_count": 1}
+        media = {
+            "image": kwargs.get("image"),
+            "image2": kwargs.get("image2"),
+            "frame_count": 16 if kwargs.get("image2_to_video") else 1,
+        }
         result = self._run_inference(
             model_name=kwargs["model_name"],
             prompt_text=system_prompt,
@@ -134,7 +142,9 @@ class QwenUncensoredVisionAdvanced(QwenUncensoredBaseNode):
         from qwen_forge.prompts import load_prompt_config
         cfg = load_prompt_config(SYSTEM_PROMPTS_PATH)
         presets = cfg.get("_presets", [])
-        default_preset = presets[0] if presets else "Describe this image in detail."
+        preset_groups = cfg.get("_preset_groups", {})
+        families = list(preset_groups) or ["Generic"]
+        default_preset = preset_groups.get(families[0], presets)[0] if presets else "Describe this image in detail."
 
         num_gpus = torch.cuda.device_count()
         gpu_list = [f"cuda:{i}" for i in range(num_gpus)]
@@ -147,6 +157,7 @@ class QwenUncensoredVisionAdvanced(QwenUncensoredBaseNode):
                 "attention_mode": (["auto", "sage", "flash_attention_2", "sdpa"], {"default": "auto"}),
                 "use_torch_compile": ("BOOLEAN", {"default": False}),
                 "device": (device_options, {"default": "auto"}),
+                "preset_family": (families, {"default": families[0]}),
                 "preset_prompt": (presets, {"default": default_preset}),
                 "custom_prompt": ("STRING", {"default": "", "multiline": True}),
                 "max_tokens": ("INT", {"default": 8192, "min": 64, "max": 16384}),
@@ -172,6 +183,7 @@ class QwenUncensoredVisionAdvanced(QwenUncensoredBaseNode):
         attention_mode,
         use_torch_compile,
         device,
+        preset_family,
         preset_prompt,
         custom_prompt,
         max_tokens,
@@ -227,3 +239,13 @@ class QwenUncensoredVisionAdvanced(QwenUncensoredBaseNode):
         set_last_prompt(result)
         self._maybe_unload(keep_model_loaded)
         return (result,)
+
+
+NODE_CLASS_MAPPINGS = {
+    "QwenUncensoredVision": QwenUncensoredVision,
+    "QwenUncensoredVisionAdvanced": QwenUncensoredVisionAdvanced,
+}
+NODE_DISPLAY_NAME_MAPPINGS = {
+    "QwenUncensoredVision": "Qwen-Uncensored Vision",
+    "QwenUncensoredVisionAdvanced": "Qwen-Uncensored Vision (Advanced)",
+}

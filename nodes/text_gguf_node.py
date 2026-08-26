@@ -103,3 +103,7 @@ class QwenUncensoredTextGGUF(QwenUncensoredBaseNode):
         set_last_prompt(result)
         self._maybe_unload(keep_model_loaded)
         return (result,)
+
+
+NODE_CLASS_MAPPINGS = {"QwenUncensoredTextGGUF": QwenUncensoredTextGGUF}
+NODE_DISPLAY_NAME_MAPPINGS = {"QwenUncensoredTextGGUF": "Qwen-Uncensored Text (GGUF)"}
