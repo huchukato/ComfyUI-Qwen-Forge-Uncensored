@@ -1,6 +1,6 @@
 # ComfyUI-Qwen-Uncensored
 
-A clean, modular ComfyUI node pack for uncensored Qwen multimodal and text generation.
+A clean, modular ComfyUI node pack for generating uncensored multimodal and text prompts with Qwen, designed specifically for AI video-generation workflows.
 
 ## Features
 
