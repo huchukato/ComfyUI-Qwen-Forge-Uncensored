@@ -10,6 +10,7 @@ NODE_DIR = Path(__file__).parent.parent
 MODELS_PATH = NODE_DIR / "models.json"
 CUSTOM_MODELS_PATH = NODE_DIR / "custom_models.json"
 SYSTEM_PROMPTS_PATH = NODE_DIR / "system_prompts.json"
+HF_LOCAL_DIR = "Qwen-Forge"
 
 
 def _safe_dirname(value: str) -> str:
@@ -69,8 +70,8 @@ def _scan_local_hf_models(catalog: dict[str, dict[str, Any]]) -> dict[str, Any]:
 
     scan_dirs: set[Path] = set()
     for root in _get_llm_paths():
-        scan_dirs.add(root / "Qwen-Forge")
-    scan_dirs.add(_default_models_dir() / "Qwen-Forge")
+        scan_dirs.add(root / HF_LOCAL_DIR)
+    scan_dirs.add(_default_models_dir() / HF_LOCAL_DIR)
 
     new_models: dict[str, Any] = {}
     for models_dir in scan_dirs:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import gc
+import json
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +22,13 @@ from transformers import (
     BitsAndBytesConfig,
 )
 
+try:
+    from huggingface_hub import hf_hub_download, snapshot_download
+except ImportError:
+    snapshot_download = None  # type: ignore[assignment]
+    hf_hub_download = None  # type: ignore[assignment]
+
+from ..config import HF_LOCAL_DIR, _default_models_dir, _get_llm_paths
 from ..media import tensor_to_pil
 from ..memory import ensure_cuda_vram_headroom, normalize_device, torch_gc
 from .base import AbstractBackend
@@ -94,7 +102,7 @@ class HFTransformersBackend(AbstractBackend):
         self.unload()
         ensure_cuda_vram_headroom("QwenUncensored HF")
 
-        model_path = self._resolve_path(model_entry)
+        model_path = self._ensure_model_path(model_entry)
         quant_config, dtype = self._quantization_config(model_entry, quant_value, device)
 
         # BitsAndBytes must load directly onto GPU via device_map
@@ -316,14 +324,75 @@ class HFTransformersBackend(AbstractBackend):
             print(f"[QwenUncensored HF] SageAttention patching failed: {exc}")
 
     @staticmethod
-    def _resolve_path(model_entry: dict[str, Any]) -> str:
+    def _ensure_model_path(model_entry: dict[str, Any]) -> str:
         local = model_entry.get("local_path")
         if local:
-            return str(local)
+            target = Path(local)
+            if target.exists() and target.is_dir():
+                return str(target)
+            raise FileNotFoundError(
+                f"[QwenUncensored HF] Local model directory not found: {target}"
+            )
+
         repo_id = model_entry.get("repo_id")
         if not repo_id:
             raise ValueError("Model entry has no repo_id or local_path")
-        return repo_id
+
+        if snapshot_download is None:
+            raise RuntimeError(
+                "huggingface_hub is not installed; cannot download models."
+            )
+
+        llm_paths = _get_llm_paths()
+        models_dir = (
+            llm_paths[0] / HF_LOCAL_DIR
+            if llm_paths
+            else _default_models_dir() / HF_LOCAL_DIR
+        )
+        models_dir.mkdir(parents=True, exist_ok=True)
+        target = models_dir / repo_id.split("/")[-1]
+
+        if target.exists() and target.is_dir():
+            if any(target.glob("*.safetensors")) or any(target.glob("*.bin")):
+                return str(target)
+
+        print(f"[QwenUncensored HF] Downloading {repo_id} to {target}")
+        snapshot_download(
+            repo_id=repo_id,
+            local_dir=str(target),
+            ignore_patterns=["*.md", ".git*", "*.msgpack", "*.h5"],
+        )
+
+        # Some community uploads omit preprocessor_config.json even when the model is
+        # multimodal. AutoProcessor fails without it, so fetch it from the official base.
+        preproc_path = target / "preprocessor_config.json"
+        if not preproc_path.exists():
+            config_path = target / "config.json"
+            needs_vision = False
+            if config_path.exists():
+                try:
+                    with open(config_path, "r", encoding="utf-8") as f:
+                        cfg = json.load(f)
+                    needs_vision = "vision_config" in cfg
+                except Exception:
+                    pass
+            if needs_vision and hf_hub_download is not None:
+                print(
+                    "[QwenUncensored HF] preprocessor_config.json missing — "
+                    "fetching from Qwen/Qwen3.5-4B"
+                )
+                try:
+                    hf_hub_download(
+                        repo_id="Qwen/Qwen3.5-4B",
+                        filename="preprocessor_config.json",
+                        local_dir=str(target),
+                    )
+                except Exception as exc:
+                    print(
+                        f"[QwenUncensored HF] Could not fetch preprocessor_config.json: {exc}"
+                    )
+
+        return str(target)
 
     def _quantization_config(
         self,

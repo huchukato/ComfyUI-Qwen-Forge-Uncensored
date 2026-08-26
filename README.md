@@ -47,7 +47,7 @@ For GGUF vision support, install a vision-capable `llama-cpp-python` wheel for y
 - `system_prompts.json` — vision presets and text styles.
 - `custom_models.json` — optional user overrides (not tracked by git).
 
-Local models in `models/LLM/Qwen-Forge` and `models/LLM/GGUF` are discovered automatically.
+HF models are downloaded into `models/LLM/Qwen-Forge`; local models in `models/LLM/Qwen-Forge` and `models/LLM/GGUF` are discovered automatically.
 
 ## License
 
