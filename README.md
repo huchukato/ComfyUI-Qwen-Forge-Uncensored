@@ -28,6 +28,18 @@ pip install -r requirements.txt
 
 For GGUF vision support, install a vision-capable `llama-cpp-python` wheel for your platform.
 
+### Installing `llama-cpp-python`
+
+The GGUF backend uses `llama-cpp-python`. The generic package on PyPI may compile `llama.cpp` from source on Linux/CUDA systems. If you prefer a faster, pre-built wheel, install one that matches your **Python version**, **OS**, and **CUDA version** before running `pip install -r requirements.txt`.
+
+For example, on Linux with Python 3.12 and CUDA 13.1:
+
+```bash
+pip install https://github.com/JamePeng/llama-cpp-python/releases/download/v0.3.48-cu131-linux-20260821/llama_cpp_python-0.3.48+cu131-cp312-cp312-linux_x86_64.whl
+```
+
+Pre-built wheels are also available for macOS and Windows from the same source. If a compatible `llama-cpp-python` is already installed, the requirements step will not recompile or replace it.
+
 ## Nodes
 
 | Node | Backend | Purpose |
