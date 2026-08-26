@@ -7,9 +7,15 @@ from pathlib import Path
 from typing import Any
 
 import torch
+
+try:
+    # transformers >= 5.0 renamed the vision-seq class to image-text-to-text
+    from transformers import AutoModelForImageTextToText as AutoModelForVision2Seq
+except ImportError:
+    from transformers import AutoModelForVision2Seq
+
 from transformers import (
     AutoModelForCausalLM,
-    AutoModelForVision2Seq,
     AutoProcessor,
     AutoTokenizer,
     BitsAndBytesConfig,
