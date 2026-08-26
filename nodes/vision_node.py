@@ -14,7 +14,7 @@ class QwenUncensoredVision(QwenUncensoredBaseNode):
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("RESPONSE",)
     FUNCTION = "process"
-    CATEGORY = "Qwen-Uncensored"
+    CATEGORY = "Qwen Forge"
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -131,7 +131,7 @@ class QwenUncensoredVisionAdvanced(QwenUncensoredBaseNode):
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("RESPONSE",)
     FUNCTION = "process"
-    CATEGORY = "Qwen-Uncensored"
+    CATEGORY = "Qwen Forge"
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -246,6 +246,6 @@ NODE_CLASS_MAPPINGS = {
     "QwenUncensoredVisionAdvanced": QwenUncensoredVisionAdvanced,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "QwenUncensoredVision": "Qwen-Uncensored Vision",
-    "QwenUncensoredVisionAdvanced": "Qwen-Uncensored Vision (Advanced)",
+    "QwenUncensoredVision": "Qwen Forge | Vision",
+    "QwenUncensoredVisionAdvanced": "Qwen Forge | Vision (Advanced)",
 }

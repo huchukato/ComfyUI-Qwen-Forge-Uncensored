@@ -20,7 +20,7 @@ class QwenUncensoredVRAMCleanup:
     RETURN_TYPES = ("*",)
     RETURN_NAMES = ("output",)
     FUNCTION = "cleanup_vram_memory"
-    CATEGORY = "Qwen Uncensored/Tools"
+    CATEGORY = "Qwen Forge/Tools"
     OUTPUT_NODE = True
 
     def cleanup_vram_memory(self, input, cleanup_mode):
@@ -74,4 +74,4 @@ class QwenUncensoredVRAMCleanup:
         torch.cuda.synchronize()
 
 NODE_CLASS_MAPPINGS = {"QwenUncensoredVRAMCleanup": QwenUncensoredVRAMCleanup}
-NODE_DISPLAY_NAME_MAPPINGS = {"QwenUncensoredVRAMCleanup": "Qwen Uncensored - VRAM Cleanup"}
+NODE_DISPLAY_NAME_MAPPINGS = {"QwenUncensoredVRAMCleanup": "Qwen Forge | VRAM Cleanup"}

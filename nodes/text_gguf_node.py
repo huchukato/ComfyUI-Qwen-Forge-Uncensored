@@ -12,7 +12,7 @@ class QwenUncensoredTextGGUF(QwenUncensoredBaseNode):
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("ENHANCED_OUTPUT",)
     FUNCTION = "process"
-    CATEGORY = "Qwen-Uncensored"
+    CATEGORY = "Qwen Forge"
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -106,4 +106,4 @@ class QwenUncensoredTextGGUF(QwenUncensoredBaseNode):
 
 
 NODE_CLASS_MAPPINGS = {"QwenUncensoredTextGGUF": QwenUncensoredTextGGUF}
-NODE_DISPLAY_NAME_MAPPINGS = {"QwenUncensoredTextGGUF": "Qwen-Uncensored Text (GGUF)"}
+NODE_DISPLAY_NAME_MAPPINGS = {"QwenUncensoredTextGGUF": "Qwen Forge | Text (GGUF)"}

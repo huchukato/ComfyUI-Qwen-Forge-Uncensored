@@ -12,7 +12,7 @@ class QwenUncensoredVisionGGUF(QwenUncensoredBaseNode):
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("RESPONSE",)
     FUNCTION = "process"
-    CATEGORY = "Qwen-Uncensored"
+    CATEGORY = "Qwen Forge"
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -106,7 +106,7 @@ class QwenUncensoredVisionGGUFAdvanced(QwenUncensoredBaseNode):
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("RESPONSE",)
     FUNCTION = "process"
-    CATEGORY = "Qwen-Uncensored"
+    CATEGORY = "Qwen Forge"
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -220,6 +220,6 @@ NODE_CLASS_MAPPINGS = {
     "QwenUncensoredVisionGGUFAdvanced": QwenUncensoredVisionGGUFAdvanced,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "QwenUncensoredVisionGGUF": "Qwen-Uncensored Vision (GGUF)",
-    "QwenUncensoredVisionGGUFAdvanced": "Qwen-Uncensored Vision GGUF (Advanced)",
+    "QwenUncensoredVisionGGUF": "Qwen Forge | Vision (GGUF)",
+    "QwenUncensoredVisionGGUFAdvanced": "Qwen Forge | Vision (GGUF Advanced)",
 }

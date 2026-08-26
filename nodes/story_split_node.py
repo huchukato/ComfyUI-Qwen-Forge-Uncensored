@@ -14,7 +14,7 @@ class QwenUncensoredStorySplit:
     RETURN_TYPES = ("STRING", "STRING", "STRING", "STRING", "STRING")
     RETURN_NAMES = ("prompt_1", "prompt_2", "prompt_3", "prompt_4", "debug_info")
     FUNCTION = "split_story"
-    CATEGORY = "Qwen Uncensored/Tools"
+    CATEGORY = "Qwen Forge/Tools"
 
     def split_story(self, text, auto_split=True, custom_delimiter=""):
         if not text:
@@ -41,4 +41,4 @@ class QwenUncensoredStorySplit:
 
 
 NODE_CLASS_MAPPINGS = {"QwenUncensoredStorySplit": QwenUncensoredStorySplit}
-NODE_DISPLAY_NAME_MAPPINGS = {"QwenUncensoredStorySplit": "Qwen Uncensored - Story Split"}
+NODE_DISPLAY_NAME_MAPPINGS = {"QwenUncensoredStorySplit": "Qwen Forge | Story Split"}

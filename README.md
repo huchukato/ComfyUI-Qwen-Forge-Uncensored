@@ -44,14 +44,14 @@ Pre-built wheels are also available for macOS and Windows from the same source. 
 
 | Node | Backend | Purpose |
 |------|---------|---------|
-| `Qwen-Uncensored Vision` | HF Transformers | Multimodal inference (image/video) |
-| `Qwen-Uncensored Vision (Advanced)` | HF Transformers | Multimodal with full parameter control |
-| `Qwen-Uncensored Vision (GGUF)` | GGUF | Multimodal inference via llama.cpp |
-| `Qwen-Uncensored Vision GGUF (Advanced)` | GGUF | Multimodal GGUF with full parameters |
-| `Qwen-Uncensored Text` | HF Transformers | Prompt enhancement / text-only |
-| `Qwen-Uncensored Text (GGUF)` | GGUF | Prompt enhancement / text-only via llama.cpp |
-| `Qwen Uncensored - VRAM Cleanup` | Utility | Pass-through VRAM cache cleanup and model unloading |
-| `Qwen Uncensored - Story Split` | Utility | Split a story into four separate prompts |
+| `Qwen Forge | Vision` | HF Transformers | Multimodal inference (image/video) |
+| `Qwen Forge | Vision (Advanced)` | HF Transformers | Multimodal with full parameter control |
+| `Qwen Forge | Vision (GGUF)` | GGUF | Multimodal inference via llama.cpp |
+| `Qwen Forge | Vision (GGUF Advanced)` | GGUF | Multimodal GGUF with full parameters |
+| `Qwen Forge | Text` | HF Transformers | Prompt enhancement / text-only |
+| `Qwen Forge | Text (GGUF)` | GGUF | Prompt enhancement / text-only via llama.cpp |
+| `Qwen Forge | VRAM Cleanup` | Utility | Pass-through VRAM cache cleanup and model unloading |
+| `Qwen Forge | Story Split` | Utility | Split a story into four separate prompts |
 
 ## Configuration
 
