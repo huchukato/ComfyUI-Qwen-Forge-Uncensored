@@ -1,7 +1,7 @@
 # ComfyUI-Qwen-Uncensored requirements
 # Qwen3.x models require transformers >= 4.57.0
 
-transforms>=4.57.0
+transformers>=4.57.0
 torch
 huggingface-hub
 hf_xet
