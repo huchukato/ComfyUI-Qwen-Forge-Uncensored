@@ -1,5 +1,5 @@
 [project]
-name = "ComfyUI-Qwen-Uncensored"
+name = "ComfyUI-Qwen-Forge-Uncensored"
 description = "Clean, modular ComfyUI node pack for uncensored Qwen multimodal and text generation with pluggable backends (HF Transformers, GGUF, future vLLM/MLX)."
 version = "1.0.0"
 license = {file = "LICENSE"}
@@ -18,10 +18,10 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/huchukato/ComfyUI-Qwen-Uncensored"
+Repository = "https://github.com/huchukato/ComfyUI-Qwen-Forge-Uncensored"
 
 [tool.comfy]
 PublisherId = "huchukato"
-DisplayName = "ComfyUI-Qwen-Uncensored"
+DisplayName = "ComfyUI-Qwen-Forge-Uncensored"
 Icon = ""
 Category = "video"

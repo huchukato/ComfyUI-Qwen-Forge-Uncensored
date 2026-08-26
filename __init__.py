@@ -1,10 +1,10 @@
 """
 {
-  "name": "ComfyUI-Qwen-Uncensored",
+  "name": "ComfyUI-Qwen-Forge-Uncensored",
   "description": "Clean, modular ComfyUI node pack for uncensored Qwen multimodal and text generation with pluggable backends.",
   "author": "huchukato",
   "version": "1.0.0",
-  "url": "https://github.com/huchukato/ComfyUI-Qwen-Uncensored",
+  "url": "https://github.com/huchukato/ComfyUI-Qwen-Forge-Uncensored",
   "category": "video"
 }
 """

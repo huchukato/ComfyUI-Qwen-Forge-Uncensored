@@ -1,9 +1,9 @@
 {
   "author": "huchukato",
   "title": "Qwen-Uncensored: Multimodal & Text",
-  "reference": "https://github.com/huchukato/ComfyUI-Qwen-Uncensored",
+  "reference": "https://github.com/huchukato/ComfyUI-Qwen-Forge-Uncensored",
   "files": [
-    "https://github.com/huchukato/ComfyUI-Qwen-Uncensored"
+    "https://github.com/huchukato/ComfyUI-Qwen-Forge-Uncensored"
   ],
   "install_type": "git-clone",
   "description": "Clean, modular ComfyUI node pack for uncensored Qwen multimodal and text generation. Supports HuggingFace Transformers and GGUF backends, smart prompt caching, VRAM cleanup, and professional video presets.",

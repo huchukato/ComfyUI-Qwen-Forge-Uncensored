@@ -1,4 +1,6 @@
-# ComfyUI-Qwen-Uncensored
+# ComfyUI-Qwen-Forge-Uncensored
+
+![ComfyUI Qwen Forge Uncensored — Automated Prompting for Video Generation](img/qwen-forge.jpeg)
 
 A clean, modular ComfyUI node pack for generating uncensored multimodal and text prompts with Qwen, designed specifically for AI video-generation workflows.
 
@@ -14,13 +16,13 @@ A clean, modular ComfyUI node pack for generating uncensored multimodal and text
 
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/huchukato/ComfyUI-Qwen-Uncensored.git
+git clone https://github.com/huchukato/ComfyUI-Qwen-Forge-Uncensored.git
 ```
 
 Install dependencies (if not already present):
 
 ```bash
-cd ComfyUI-Qwen-Uncensored
+cd ComfyUI-Qwen-Forge-Uncensored
 pip install -r requirements.txt
 ```
 
