@@ -69,8 +69,8 @@ def _scan_local_hf_models(catalog: dict[str, dict[str, Any]]) -> dict[str, Any]:
 
     scan_dirs: set[Path] = set()
     for root in _get_llm_paths():
-        scan_dirs.add(root / "Qwen-VL")
-    scan_dirs.add(_default_models_dir() / "Qwen-VL")
+        scan_dirs.add(root / "Qwen-Forge")
+    scan_dirs.add(_default_models_dir() / "Qwen-Forge")
 
     new_models: dict[str, Any] = {}
     for models_dir in scan_dirs:
