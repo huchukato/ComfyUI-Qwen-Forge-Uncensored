@@ -199,15 +199,24 @@ class HFTransformersBackend(AbstractBackend):
             model_inputs = {k: v.to(self._device) for k, v in inputs.items() if torch.is_tensor(v)}
         else:
             # Multimodal: build processor inputs from conversation
-            images = []
+            # Collect images in the same order they appear in the conversation content
+            images = [
+                tensor_to_pil(item.get("image"))
+                for item in conversation[-1].get("content", [])
+                if item.get("type") == "image"
+            ]
+            images = [img for img in images if img is not None]
             prompt_text = ""
             for item in conversation[-1].get("content", []):
-                if item.get("type") == "image":
-                    img = tensor_to_pil(item.get("image"))
-                    if img is not None:
-                        images.append(img)
-                elif item.get("type") == "text":
+                if item.get("type") == "text":
                     prompt_text = item.get("text", "")
+
+            # Qwen3.5: prepend /no_think to disable thinking at the text level too
+            if self.is_qwen3 and prompt_text and not prompt_text.startswith("/no_think"):
+                for item in conversation[-1].get("content", []):
+                    if item.get("type") == "text":
+                        item["text"] = "/no_think\n" + item["text"]
+                        break
 
             chat = self.processor.apply_chat_template(
                 conversation,
