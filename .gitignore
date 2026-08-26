@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.eggs/
+*.so
+
+# Runtime files
+prompt_cache.json
+custom_models.json
+*.log
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node/web assets generated
+web/dist/
+node_modules/

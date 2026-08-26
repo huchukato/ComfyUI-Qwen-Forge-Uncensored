@@ -1,0 +1,19 @@
+# ComfyUI-Qwen-Uncensored requirements
+# Qwen3.x models require transformers >= 4.57.0
+
+transforms>=4.57.0
+torch
+huggingface-hub
+hf_xet
+psutil
+numpy
+Pillow
+opencv-python
+bitsandbytes
+accelerate
+
+# GGUF backend
+llama-cpp-python
+
+# Optional: Flash Attention 2 for 2-3x performance boost on Ampere/Ada/Hopper (RTX 20+)
+# flash-attn>=2.0.0

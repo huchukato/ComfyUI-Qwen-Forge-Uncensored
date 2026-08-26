@@ -1,0 +1,27 @@
+[project]
+name = "ComfyUI-Qwen-Uncensored"
+description = "Clean, modular ComfyUI node pack for uncensored Qwen multimodal and text generation with pluggable backends (HF Transformers, GGUF, future vLLM/MLX)."
+version = "1.0.0"
+license = {file = "LICENSE"}
+dependencies = [
+    "transformers>=4.57.0",
+    "torch",
+    "huggingface-hub",
+    "hf_xet",
+    "psutil",
+    "numpy",
+    "Pillow",
+    "opencv-python",
+    "bitsandbytes",
+    "accelerate",
+    "llama-cpp-python",
+]
+
+[project.urls]
+Repository = "https://github.com/huchukato/ComfyUI-Qwen-Uncensored"
+
+[tool.comfy]
+PublisherId = "huchukato"
+DisplayName = "ComfyUI-Qwen-Uncensored"
+Icon = ""
+Category = "video"
