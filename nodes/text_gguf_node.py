@@ -69,8 +69,9 @@ class QwenUncensoredTextGGUF(QwenUncensoredBaseNode):
                 return (last,)
             return ("",)
 
+        from qwen_forge.config import SYSTEM_PROMPTS_PATH
         from qwen_forge.prompts import load_prompt_config, build_text_prompt
-        cfg = load_prompt_config("system_prompts.json")
+        cfg = load_prompt_config(SYSTEM_PROMPTS_PATH)
         styles = cfg.get("text", {}).get("styles", {})
         merged_prompt = build_text_prompt(
             enhancement_style,

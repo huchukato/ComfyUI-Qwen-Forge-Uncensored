@@ -85,8 +85,9 @@ class QwenUncensoredVision(QwenUncensoredBaseNode):
                 return (last,)
             return ("",)
 
+        from qwen_forge.config import SYSTEM_PROMPTS_PATH
         from qwen_forge.prompts import load_prompt_config, build_prompt
-        cfg = load_prompt_config("system_prompts.json")
+        cfg = load_prompt_config(SYSTEM_PROMPTS_PATH)
         system_prompt = build_prompt(
             kwargs["preset_prompt"],
             kwargs["custom_prompt"],
@@ -205,8 +206,9 @@ class QwenUncensoredVisionAdvanced(QwenUncensoredBaseNode):
                 return (last,)
             return ("",)
 
+        from qwen_forge.config import SYSTEM_PROMPTS_PATH
         from qwen_forge.prompts import load_prompt_config, build_prompt
-        cfg = load_prompt_config("system_prompts.json")
+        cfg = load_prompt_config(SYSTEM_PROMPTS_PATH)
         system_prompt = build_prompt(
             preset_prompt,
             custom_prompt,
