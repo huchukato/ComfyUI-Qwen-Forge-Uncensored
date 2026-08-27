@@ -91,7 +91,7 @@ class QwenUncensoredVision(QwenUncensoredBaseNode):
             kwargs["preset_prompt"],
             kwargs["custom_prompt"],
             cfg.get("presets", {}),
-            guard=False,
+            guard=True,
             sfw=False,
         )
 
@@ -211,7 +211,7 @@ class QwenUncensoredVisionAdvanced(QwenUncensoredBaseNode):
             preset_prompt,
             custom_prompt,
             cfg.get("presets", {}),
-            guard=False,
+            guard=True,
             sfw=False,
         )
 

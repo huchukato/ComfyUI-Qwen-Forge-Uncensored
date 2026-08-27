@@ -79,7 +79,15 @@ class QwenUncensoredBaseNode:
             self.backend.load(entry, {**params, **entry_params})
 
         raw = self.backend.generate(conversation, params)
-        cleaned = clean_model_output(raw, OutputCleanConfig(mode="prompt")) or raw
+        # Minimal cleanup: strip think blocks and im tokens only, preserve prompt content
+        cleaned = clean_model_output(raw, OutputCleanConfig(
+            mode="prompt",
+            strip_planning=False,
+            strip_leading_preamble=False,
+            strip_code_fences=False,
+            strip_json_wrappers=False,
+            strip_role_prefixes=False,
+        )) or raw
         return cleaned
 
     @staticmethod
