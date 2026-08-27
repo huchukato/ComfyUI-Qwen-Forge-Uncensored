@@ -79,8 +79,22 @@ class QwenUncensoredBaseNode:
             self.backend.load(entry, {**params, **entry_params})
 
         raw = self.backend.generate(conversation, params)
-        # Match QwenVL-Mod: return raw output with only .strip(), no aggressive cleaning
-        return raw.strip() if raw else ""
+        # Strip think blocks if present (Qwen3 may still emit them despite /no_think)
+        # but preserve all other content — matches QwenVL-Mod behavior
+        import re as _re
+        result = raw.strip() if raw else ""
+        result = _re.sub(r"<think[^>]*>.*?</think\s*>", "", result, flags=_re.DOTALL | _re.IGNORECASE).strip()
+        # If there's an open <think> without closing tag, take everything after it
+        if "<think" in result.lower():
+            parts = _re.split(r"</think\s*>", result, flags=_re.IGNORECASE)
+            if len(parts) > 1:
+                result = parts[-1].strip()
+            else:
+                # Open <think> with no close — strip from <think> onward
+                idx = _re.search(r"<think", result, _re.IGNORECASE)
+                if idx:
+                    result = result[:idx.start()].strip()
+        return result
 
     @staticmethod
     def _model_default(model_name: str, key: str, fallback: Any) -> Any:

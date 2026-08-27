@@ -222,7 +222,7 @@ class HFTransformersBackend(AbstractBackend):
                 conversation,
                 tokenize=False,
                 add_generation_prompt=True,
-                **chat_kwargs,
+                chat_template_kwargs=chat_kwargs or None,
             )
             inputs = self.processor(text=chat, images=images or None, return_tensors="pt")
             model_device = next(self.model.parameters()).device
