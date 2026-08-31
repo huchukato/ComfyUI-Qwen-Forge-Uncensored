@@ -48,6 +48,16 @@
         "8bit": 28.0,
         "4bit": 16.0
       }
+    },
+    "Qwen3.8-27B-Uncensored-Heretic-Abliterated": {
+      "repo_id": "alexander2323/Qwen3.8-27B-Uncensored-Heretic-Abliterated",
+      "default": false,
+      "quantized": false,
+      "vram_requirement": {
+        "full": 55.0,
+        "8bit": 29.0,
+        "4bit": 17.0
+      }
     }
   },
   "hf_text_models": {
@@ -75,6 +85,26 @@
         "8bit": 7.0,
         "4bit": 4.5
       }
+    },
+    "Qwen3.8-4B-Distill-heretic": {
+      "repo_id": "valiolla/Qwen3.8-4B-Distill-heretic",
+      "default": false,
+      "quantized": false,
+      "vram_requirement": {
+        "full": 9.0,
+        "8bit": 5.0,
+        "4bit": 3.0
+      }
+    },
+    "Qwen3.8-9B-heretic-uncensored": {
+      "repo_id": "rohit267/Qwen3.8-9B-heretic-uncensored",
+      "default": false,
+      "quantized": false,
+      "vram_requirement": {
+        "full": 19.0,
+        "8bit": 10.0,
+        "4bit": 6.0
+      }
     }
   },
   "gguf_vl_models": {
@@ -88,6 +118,66 @@
         "Qwen3.5-9B-ultra-uncensored-heretic-v2-Q5_K_M.gguf",
         "Qwen3.5-9B-ultra-uncensored-heretic-v2-Q6_K.gguf",
         "Qwen3.5-9B-ultra-uncensored-heretic-v2-Q8_0.gguf"
+      ],
+      "defaults": {
+        "context_length": 65536,
+        "image_max_tokens": 4096,
+        "n_batch": 512,
+        "gpu_layers": -1,
+        "top_k": 0,
+        "pool_size": 4194304
+      }
+    },
+    "Qwen3.8-27B-Uncensored-GGUF": {
+      "author": "mradermacher",
+      "repo_name": "Qwen3.8-27B-Uncensored-GGUF",
+      "repo_id": "mradermacher/Qwen3.8-27B-Uncensored-GGUF",
+      "mmproj_file": "Qwen3.8-27B-Uncensored.mmproj-f16.gguf",
+      "model_files": [
+        "Qwen3.8-27B-Uncensored.Q4_K_M.gguf",
+        "Qwen3.8-27B-Uncensored.Q5_K_M.gguf",
+        "Qwen3.8-27B-Uncensored.Q6_K.gguf",
+        "Qwen3.8-27B-Uncensored.Q8_0.gguf"
+      ],
+      "defaults": {
+        "context_length": 65536,
+        "image_max_tokens": 4096,
+        "n_batch": 512,
+        "gpu_layers": -1,
+        "top_k": 0,
+        "pool_size": 4194304
+      }
+    },
+    "Qwen3.8-9B-heretic-uncensored-GGUF": {
+      "author": "mradermacher",
+      "repo_name": "Qwen3.8-9B-heretic-uncensored-GGUF",
+      "repo_id": "mradermacher/Qwen3.8-9B-heretic-uncensored-GGUF",
+      "mmproj_file": "Qwen3.8-9B-heretic-uncensored.mmproj-f16.gguf",
+      "model_files": [
+        "Qwen3.8-9B-heretic-uncensored.Q4_K_M.gguf",
+        "Qwen3.8-9B-heretic-uncensored.Q5_K_M.gguf",
+        "Qwen3.8-9B-heretic-uncensored.Q6_K.gguf",
+        "Qwen3.8-9B-heretic-uncensored.Q8_0.gguf"
+      ],
+      "defaults": {
+        "context_length": 65536,
+        "image_max_tokens": 4096,
+        "n_batch": 512,
+        "gpu_layers": -1,
+        "top_k": 0,
+        "pool_size": 4194304
+      }
+    },
+    "Qwen3.8-4B-Distill-heretic-GGUF": {
+      "author": "mradermacher",
+      "repo_name": "Qwen3.8-4B-Distill-heretic-GGUF",
+      "repo_id": "mradermacher/Qwen3.8-4B-Distill-heretic-GGUF",
+      "mmproj_file": "Qwen3.8-4B-Distill-heretic.mmproj-f16.gguf",
+      "model_files": [
+        "Qwen3.8-4B-Distill-heretic.Q4_K_M.gguf",
+        "Qwen3.8-4B-Distill-heretic.Q5_K_M.gguf",
+        "Qwen3.8-4B-Distill-heretic.Q6_K.gguf",
+        "Qwen3.8-4B-Distill-heretic.Q8_0.gguf"
       ],
       "defaults": {
         "context_length": 65536,

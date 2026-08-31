@@ -1,4 +1,4 @@
-"""Shared node logic for Qwen-Uncensored ComfyUI nodes."""
+"""Shared node logic for Qwen Forge Uncensored ComfyUI nodes."""
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ from qwen_forge.prompts import build_prompt, build_text_prompt, load_prompt_conf
 
 
 class QwenUncensoredBaseNode:
-    """Shared state and processing helpers for Qwen-Uncensored nodes."""
+    """Shared state and processing helpers for Qwen Forge Uncensored nodes."""
 
     def __init__(self) -> None:
         self.backend: Any = None

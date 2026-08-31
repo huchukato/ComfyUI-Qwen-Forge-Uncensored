@@ -1,3 +1,3 @@
-"""Qwen-Uncensored core package."""
+"""Qwen Forge Uncensored core package."""
 
 __version__ = "1.0.0"
