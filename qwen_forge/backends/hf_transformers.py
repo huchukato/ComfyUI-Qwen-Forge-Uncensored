@@ -136,6 +136,51 @@ class HFTransformersBackend(AbstractBackend):
             self.model = AutoModelForCausalLM.from_pretrained(model_path, **load_kwargs).eval()
             self.tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
         else:
+            # Patch: some Qwen3-VL configs have rope_scaling=None which crashes
+            # transformers. Also handle qwen3_5 model_type not yet in CONFIG_MAPPING.
+            try:
+                from transformers import AutoConfig
+                cfg = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
+                if hasattr(cfg, "text_config") and getattr(cfg.text_config, "rope_scaling", "missing") is None:
+                    cfg.text_config.rope_scaling = {"mrope_section": [24, 20, 20], "mrope_type": "mrope"}
+                    load_kwargs["config"] = cfg
+                    print("[QwenUncensored HF] Patched rope_scaling=None in text_config")
+                elif getattr(cfg, "rope_scaling", "missing") is None:
+                    cfg.rope_scaling = {"mrope_section": [24, 20, 20], "mrope_type": "mrope"}
+                    load_kwargs["config"] = cfg
+                    print("[QwenUncensored HF] Patched rope_scaling=None in config")
+            except (ValueError, KeyError) as e:
+                # Fallback: if model_type (e.g. qwen3_5) is not recognized, try
+                # patching the config.json to use qwen3_vl which is architecturally
+                # compatible for VL models in the Qwen3 family.
+                print(f"[QwenUncensored HF] AutoConfig failed ({e}), trying config.json patch...")
+                try:
+                    cfg_path = Path(model_path) / "config.json"
+                    if cfg_path.exists():
+                        import json as _json
+                        cfg_dict = _json.loads(cfg_path.read_text())
+                        original_type = cfg_dict.get("model_type", "")
+                        if original_type in ("qwen3_5", "qwen3.5"):
+                            cfg_dict["model_type"] = "qwen3_vl"
+                            if "text_config" in cfg_dict and isinstance(cfg_dict["text_config"], dict):
+                                tc = cfg_dict["text_config"]
+                                if tc.get("model_type") in ("qwen3_5", "qwen3.5"):
+                                    tc["model_type"] = "qwen3"
+                                if tc.get("rope_scaling") is None:
+                                    tc["rope_scaling"] = {"mrope_section": [24, 20, 20], "mrope_type": "mrope"}
+                            if cfg_dict.get("rope_scaling") is None:
+                                cfg_dict["rope_scaling"] = {"mrope_section": [24, 20, 20], "mrope_type": "mrope"}
+                            cfg_path.write_text(_json.dumps(cfg_dict, indent=2))
+                            print(f"[QwenUncensored HF] Patched config.json: {original_type} -> qwen3_vl")
+                            from transformers import AutoConfig
+                            cfg = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
+                            load_kwargs["config"] = cfg
+                            load_kwargs["trust_remote_code"] = True
+                except Exception as e2:
+                    print(f"[QwenUncensored HF] config.json patch also failed: {e2}")
+            except Exception as e:
+                print(f"[QwenUncensored HF] rope_scaling pre-check skipped: {e}")
+
             self.model = AutoModelForVision2Seq.from_pretrained(model_path, **load_kwargs).eval()
             self.processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
             self.tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)

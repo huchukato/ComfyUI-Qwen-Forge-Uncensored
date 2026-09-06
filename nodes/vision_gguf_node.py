@@ -3,7 +3,26 @@
 from __future__ import annotations
 
 from .base import QwenUncensoredBaseNode, get_last_prompt, set_last_prompt
-from qwen_forge.config import load_model_catalog
+from qwen_forge.config import load_model_catalog, SYSTEM_PROMPTS_PATH
+from qwen_forge.prompts import load_prompt_config, build_prompt
+from qwen_forge.tags import (
+    CAMERA_TAG_OPTIONS,
+    CAMERA_TAG_TOOLTIP,
+    STYLE_TAG_OPTIONS,
+    STYLE_TAG_TOOLTIP,
+    add_danbooru_guidance,
+    inject_camera_tag,
+    inject_style_tag,
+)
+
+
+def _load_presets():
+    cfg = load_prompt_config(SYSTEM_PROMPTS_PATH)
+    presets = cfg.get("_presets", [])
+    preset_groups = cfg.get("_preset_groups", {})
+    families = list(preset_groups) or ["Generic"]
+    default_preset = preset_groups.get(families[0], presets)[0] if presets else "Describe this image in detail."
+    return cfg, presets, families, default_preset
 
 
 class QwenUncensoredVisionGGUF(QwenUncensoredBaseNode):
@@ -19,19 +38,15 @@ class QwenUncensoredVisionGGUF(QwenUncensoredBaseNode):
         catalog = load_model_catalog()
         models = [n for n, info in catalog.items() if info.get("backend") == "gguf" and info.get("type") == "vl"]
         default_model = models[0] if models else "(no GGUF VL models)"
-        from qwen_forge.config import SYSTEM_PROMPTS_PATH
-        from qwen_forge.prompts import load_prompt_config
-        cfg = load_prompt_config(SYSTEM_PROMPTS_PATH)
-        presets = cfg.get("_presets", [])
-        preset_groups = cfg.get("_preset_groups", {})
-        families = list(preset_groups) or ["Generic"]
-        default_preset = preset_groups.get(families[0], presets)[0] if presets else "Describe this image in detail."
+        cfg, presets, families, default_preset = _load_presets()
 
         return {
             "required": {
                 "model_name": (models, {"default": default_model}),
                 "preset_family": (families, {"default": families[0]}),
                 "preset_prompt": (presets, {"default": default_preset}),
+                "camera_tag": (CAMERA_TAG_OPTIONS, {"default": "None", "tooltip": CAMERA_TAG_TOOLTIP}),
+                "style_tag": (STYLE_TAG_OPTIONS, {"default": "None", "tooltip": STYLE_TAG_TOOLTIP}),
                 "custom_prompt": ("STRING", {"default": "", "multiline": True}),
                 "keep_model_loaded": ("BOOLEAN", {"default": False}),
                 "seed": ("INT", {"default": 1, "min": 1, "max": 2**32 - 1}),
@@ -49,6 +64,8 @@ class QwenUncensoredVisionGGUF(QwenUncensoredBaseNode):
         model_name,
         preset_family,
         preset_prompt,
+        camera_tag,
+        style_tag,
         custom_prompt,
         keep_model_loaded,
         seed,
@@ -63,8 +80,6 @@ class QwenUncensoredVisionGGUF(QwenUncensoredBaseNode):
                 return (last,)
             return ("",)
 
-        from qwen_forge.config import SYSTEM_PROMPTS_PATH
-        from qwen_forge.prompts import load_prompt_config, build_prompt
         cfg = load_prompt_config(SYSTEM_PROMPTS_PATH)
         system_prompt = build_prompt(
             preset_prompt,
@@ -73,6 +88,10 @@ class QwenUncensoredVisionGGUF(QwenUncensoredBaseNode):
             guard=False,
             sfw=False,
         )
+
+        system_prompt = add_danbooru_guidance(system_prompt, preset_prompt)
+        system_prompt = inject_camera_tag(system_prompt, preset_prompt, camera_tag, custom_prompt)
+        system_prompt = inject_style_tag(system_prompt, preset_prompt, style_tag, custom_prompt)
 
         params = {
             "device": "auto",
@@ -114,19 +133,15 @@ class QwenUncensoredVisionGGUFAdvanced(QwenUncensoredBaseNode):
         catalog = load_model_catalog()
         models = [n for n, info in catalog.items() if info.get("backend") == "gguf" and info.get("type") == "vl"]
         default_model = models[0] if models else "(no GGUF VL models)"
-        from qwen_forge.config import SYSTEM_PROMPTS_PATH
-        from qwen_forge.prompts import load_prompt_config
-        cfg = load_prompt_config(SYSTEM_PROMPTS_PATH)
-        presets = cfg.get("_presets", [])
-        preset_groups = cfg.get("_preset_groups", {})
-        families = list(preset_groups) or ["Generic"]
-        default_preset = preset_groups.get(families[0], presets)[0] if presets else "Describe this image in detail."
+        cfg, presets, families, default_preset = _load_presets()
 
         return {
             "required": {
                 "model_name": (models, {"default": default_model}),
                 "preset_family": (families, {"default": families[0]}),
                 "preset_prompt": (presets, {"default": default_preset}),
+                "camera_tag": (CAMERA_TAG_OPTIONS, {"default": "None", "tooltip": CAMERA_TAG_TOOLTIP}),
+                "style_tag": (STYLE_TAG_OPTIONS, {"default": "None", "tooltip": STYLE_TAG_TOOLTIP}),
                 "custom_prompt": ("STRING", {"default": "", "multiline": True}),
                 "max_tokens": ("INT", {"default": 8192, "min": 64, "max": 16384}),
                 "temperature": ("FLOAT", {"default": 0.6, "min": 0.0, "max": 2.0, "step": 0.05}),
@@ -154,6 +169,8 @@ class QwenUncensoredVisionGGUFAdvanced(QwenUncensoredBaseNode):
         model_name,
         preset_family,
         preset_prompt,
+        camera_tag,
+        style_tag,
         custom_prompt,
         max_tokens,
         temperature,
@@ -178,8 +195,6 @@ class QwenUncensoredVisionGGUFAdvanced(QwenUncensoredBaseNode):
                 return (last,)
             return ("",)
 
-        from qwen_forge.config import SYSTEM_PROMPTS_PATH
-        from qwen_forge.prompts import load_prompt_config, build_prompt
         cfg = load_prompt_config(SYSTEM_PROMPTS_PATH)
         system_prompt = build_prompt(
             preset_prompt,
@@ -188,6 +203,10 @@ class QwenUncensoredVisionGGUFAdvanced(QwenUncensoredBaseNode):
             guard=False,
             sfw=False,
         )
+
+        system_prompt = add_danbooru_guidance(system_prompt, preset_prompt)
+        system_prompt = inject_camera_tag(system_prompt, preset_prompt, camera_tag, custom_prompt)
+        system_prompt = inject_style_tag(system_prompt, preset_prompt, style_tag, custom_prompt)
 
         params = {
             "device": "auto",

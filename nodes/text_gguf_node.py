@@ -3,7 +3,17 @@
 from __future__ import annotations
 
 from .base import QwenUncensoredBaseNode, get_last_prompt, set_last_prompt
-from qwen_forge.config import load_model_catalog
+from qwen_forge.config import load_model_catalog, SYSTEM_PROMPTS_PATH
+from qwen_forge.prompts import load_prompt_config, build_text_prompt
+from qwen_forge.tags import (
+    CAMERA_TAG_OPTIONS,
+    CAMERA_TAG_TOOLTIP,
+    STYLE_TAG_OPTIONS,
+    STYLE_TAG_TOOLTIP,
+    add_danbooru_guidance,
+    inject_camera_tag,
+    inject_style_tag,
+)
 
 
 class QwenUncensoredTextGGUF(QwenUncensoredBaseNode):
@@ -19,8 +29,6 @@ class QwenUncensoredTextGGUF(QwenUncensoredBaseNode):
         catalog = load_model_catalog()
         models = [n for n, info in catalog.items() if info.get("backend") == "gguf" and info.get("type") == "text"]
         default_model = models[0] if models else "(no GGUF text models)"
-        from qwen_forge.config import SYSTEM_PROMPTS_PATH
-        from qwen_forge.prompts import load_prompt_config
         cfg = load_prompt_config(SYSTEM_PROMPTS_PATH)
         styles = ["✍️ Custom Only (no preset)"] + list(cfg.get("text", {}).get("styles", {}).keys())
         default_style = "📝 Enhance" if "📝 Enhance" in styles else (styles[0] if styles else "✍️ Custom Only (no preset)")
@@ -30,8 +38,9 @@ class QwenUncensoredTextGGUF(QwenUncensoredBaseNode):
                 "model_name": (models, {"default": default_model}),
                 "enhancement_style": (styles, {"default": default_style}),
                 "prompt_text": ("STRING", {"default": "", "multiline": True}),
-                "custom_system_prompt": ("STRING", {"default": "", "multiline": True}),
-                "max_tokens": ("INT", {"default": 1024, "min": 32, "max": 16384}),
+                "camera_tag": (CAMERA_TAG_OPTIONS, {"default": "None", "tooltip": CAMERA_TAG_TOOLTIP}),
+                "style_tag": (STYLE_TAG_OPTIONS, {"default": "None", "tooltip": STYLE_TAG_TOOLTIP}),
+                "max_tokens": ("INT", {"default": 8192, "min": 32, "max": 16384}),
                 "temperature": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 2.0, "step": 0.05}),
                 "top_p": ("FLOAT", {"default": 0.9, "min": 0.0, "max": 1.0, "step": 0.05}),
                 "repetition_penalty": ("FLOAT", {"default": 1.1, "min": 0.5, "max": 2.0, "step": 0.05}),
@@ -50,7 +59,8 @@ class QwenUncensoredTextGGUF(QwenUncensoredBaseNode):
         model_name,
         enhancement_style,
         prompt_text,
-        custom_system_prompt,
+        camera_tag,
+        style_tag,
         max_tokens,
         temperature,
         top_p,
@@ -69,17 +79,24 @@ class QwenUncensoredTextGGUF(QwenUncensoredBaseNode):
                 return (last,)
             return ("",)
 
-        from qwen_forge.config import SYSTEM_PROMPTS_PATH
-        from qwen_forge.prompts import load_prompt_config, build_text_prompt
         cfg = load_prompt_config(SYSTEM_PROMPTS_PATH)
         styles = cfg.get("text", {}).get("styles", {})
         merged_prompt = build_text_prompt(
             enhancement_style,
-            custom_system_prompt,
+            "",
             prompt_text,
             styles,
             guard=True,
         )
+
+        # Add Danbooru tag guidance for LTX and MiniMax T2V presets
+        merged_prompt = add_danbooru_guidance(merged_prompt, enhancement_style)
+
+        # Inject camera tag (start + end for recency bias)
+        merged_prompt = inject_camera_tag(merged_prompt, enhancement_style, camera_tag, prompt_text)
+
+        # Inject style tag (start + end for recency bias)
+        merged_prompt = inject_style_tag(merged_prompt, enhancement_style, style_tag, prompt_text)
 
         params = {
             "device": "auto",
